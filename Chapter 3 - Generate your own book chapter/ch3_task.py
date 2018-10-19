@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-import datetime
+import sys
 import collections
 
 def get_words(file_name):
@@ -20,6 +20,12 @@ def build_dictionary(words):
     return most_common_words, word2id, id2word
 
 words = get_words("./the_hunger_games.txt")
+
+# Check if text is added to `the_hunger_games.txt` file
+if len(words) < 2000:
+    print("> Please enter text with more than 2000 words inside `the_hunger_games.txt` file. Then run the program again.")
+    sys.exit()
+
 most_common_words, word2id, id2word = build_dictionary(words)
 most_common_words_length = len(most_common_words)
 
@@ -86,6 +92,7 @@ with tf.Session() as sess:
             iter_offset += batch_size
         else:
             add_from_the_beginning = batch_size - (length_X - iter_offset)
+            print("Training_X:", sess.run(tf.shape(training_X)), "X:", sess.run(tf.shape(X[0: 3])))
             training_X_batch = np.concatenate((training_X[iter_offset: length_X], X[0: add_from_the_beginning]))
             training_y_batch = np.concatenate((training_y[iter_offset: length_X], y[0: add_from_the_beginning]))
             iter_offset = add_from_the_beginning
