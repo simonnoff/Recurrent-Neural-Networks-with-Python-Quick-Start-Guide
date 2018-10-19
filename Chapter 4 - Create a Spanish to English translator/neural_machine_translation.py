@@ -5,13 +5,13 @@ import data_utils
 import matplotlib.pyplot as plt
 
 # read dataset
-X, Y, english_word2idx, english_idx2word, english_vocab, spanish_word2idx, spanish_idx2word, spanish_vocab = data_utils.read_dataset('./data.pkl')
+X, Y, spanish_word2idx, spanish_idx2word, spanish_vocab, english_word2idx, english_idx2word, english_vocab = data_utils.read_dataset('./data.pkl')
 
 # Data padding
 def data_padding(x, y, length = 15):
     for i in range(len(X)):
-        x[i] = x[i] + (length - len(x[i])) * [english_word2idx['<pad>']]
-        y[i] = [spanish_word2idx['<go>']] + y[i] + (length - len(y[i])) * [spanish_word2idx['<pad>']]
+        x[i] = x[i] + (length - len(x[i])) * [spanish_word2idx['<pad>']]
+        y[i] = [english_word2idx['<go>']] + y[i] + (length - len(y[i])) * [english_word2idx['<pad>']]
 
 data_padding(X, Y)
 
@@ -25,8 +25,8 @@ del Y
 input_sequence_length = 15
 output_sequence_length = 16
 
-english_vocab_size = len(english_vocab) + 2 # + <pad>, <unk>
-spanish_vocab_size = len(spanish_vocab) + 4 # + <pad>, <eos>, <go>
+spanish_vocab_size = len(spanish_vocab) + 2 # + <pad>, <unk>
+english_vocab_size = len(english_vocab) + 4 # + <pad>, <eos>, <go>
 
 # Placeholders
 
@@ -43,8 +43,8 @@ size = 512 # num_hidden_units
 embedding_size = 100
 
 with tf.variable_scope("model_params"):
-    w_t = tf.get_variable('proj_w', [spanish_vocab_size, size], tf.float32)
-    b = tf.get_variable('proj_b', [spanish_vocab_size], tf.float32)
+    w_t = tf.get_variable('proj_w', [english_vocab_size, size], tf.float32)
+    b = tf.get_variable('proj_b', [english_vocab_size], tf.float32)
     w = tf.transpose(w_t)
 
     output_projection = (w, b)
@@ -53,8 +53,8 @@ with tf.variable_scope("model_params"):
                                                 encoder_inputs,
                                                 decoder_inputs,
                                                 tf.contrib.rnn.BasicLSTMCell(size),
-                                                num_encoder_symbols=english_vocab_size,
-                                                num_decoder_symbols=spanish_vocab_size,
+                                                num_encoder_symbols=spanish_vocab_size,
+                                                num_decoder_symbols=english_vocab_size,
                                                 embedding_size=embedding_size,
                                                 feed_previous=False,
                                                 output_projection=output_projection,
@@ -68,7 +68,7 @@ def sampled_loss(labels, logits):
         labels=tf.reshape(labels, [-1, 1]), # Reshape labels to be array of 1-D arrays with each element: [[1], [2], [3]...]
         inputs = logits,
         num_sampled = size,
-        num_classes = spanish_vocab_size
+        num_classes = english_vocab_size
     )
 
 # Weighted cross-entropy loss for a sequence of logits
@@ -121,13 +121,13 @@ def feed_dict(x, y, batch_size = 64):
     for i in range(output_sequence_length):
         feed[decoder_inputs[i].name] = np.array([y[j][i] for j in idxes_y], dtype = np.int32)
 
-    feed[targets[len(targets)-1].name] = np.full(shape = [batch_size], fill_value = spanish_word2idx['<pad>'], dtype = np.int32)
+    feed[targets[len(targets)-1].name] = np.full(shape = [batch_size], fill_value = english_word2idx['<pad>'], dtype = np.int32)
 
     for i in range(output_sequence_length - 1):
         batch_weigths = np.ones(batch_size, dtype = np.float32)
         target = feed[decoder_inputs[i+1].name]
         for j in range(batch_size):
-            if target[j] == spanish_word2idx['<pad>']:
+            if target[j] == english_word2idx['<pad>']:
                 batch_weigths[j] = 0.0
         feed[target_weights[i].name] = batch_weigths
 

@@ -18,35 +18,35 @@ def read_sentences(file_path):
 
 	return sentences
 
-def create_dataset(english_sentences, spanish_sentences):
+def create_dataset(spanish_sentences, english_sentences):
 
-	english_vocab_dict = Counter(word.strip(',." ;:)(][?!') for sentence in english_sentences for word in sentence.split())
 	spanish_vocab_dict = Counter(word.strip(',." ;:)(][?!') for sentence in spanish_sentences for word in sentence.split())
+	english_vocab_dict = Counter(word.strip(',." ;:)(][?!') for sentence in english_sentences for word in sentence.split())
 
-	english_vocab = list(map(lambda x: x[0], sorted(english_vocab_dict.items(), key = lambda x: -x[1])))
 	spanish_vocab = list(map(lambda x: x[0], sorted(spanish_vocab_dict.items(), key = lambda x: -x[1])))
+	english_vocab = list(map(lambda x: x[0], sorted(english_vocab_dict.items(), key = lambda x: -x[1])))
 
-	english_vocab = english_vocab[:20000]
-	spanish_vocab = spanish_vocab[:30000]
+	spanish_vocab = spanish_vocab[:20000]
+	english_vocab = english_vocab[:30000]
 
 	start_idx = 2
-	english_word2idx = dict([(word, idx+start_idx) for idx, word in enumerate(english_vocab)])
-	english_word2idx['<ukn>'] = 0
-	english_word2idx['<pad>'] = 1
-
-	english_idx2word = dict([(idx, word) for word, idx in english_word2idx.items()])
-
-	start_idx = 4
 	spanish_word2idx = dict([(word, idx+start_idx) for idx, word in enumerate(spanish_vocab)])
 	spanish_word2idx['<ukn>'] = 0
-	spanish_word2idx['<go>']  = 1
-	spanish_word2idx['<eos>'] = 2
-	spanish_word2idx['<pad>'] = 3
+	spanish_word2idx['<pad>'] = 1
 
 	spanish_idx2word = dict([(idx, word) for word, idx in spanish_word2idx.items()])
 
-	x = [[english_word2idx.get(word.strip(',." ;:)(][?!'), 0) for word in sentence.split()] for sentence in english_sentences]
-	y = [[spanish_word2idx.get(word.strip(',." ;:)(][?!'), 0) for word in sentence.split()] for sentence in spanish_sentences]
+	start_idx = 4
+	english_word2idx = dict([(word, idx+start_idx) for idx, word in enumerate(english_vocab)])
+	english_word2idx['<ukn>'] = 0
+	english_word2idx['<go>']  = 1
+	english_word2idx['<eos>'] = 2
+	english_word2idx['<pad>'] = 3
+
+	english_idx2word = dict([(idx, word) for word, idx in english_word2idx.items()])
+
+	x = [[spanish_word2idx.get(word.strip(',." ;:)(][?!'), 0) for word in sentence.split()] for sentence in spanish_sentences]
+	y = [[english_word2idx.get(word.strip(',." ;:)(][?!'), 0) for word in sentence.split()] for sentence in english_sentences]
 
 	X = []
 	Y = []
@@ -59,7 +59,7 @@ def create_dataset(english_sentences, spanish_sentences):
 				X.append(x[i])
 				Y.append(y[i])
 
-	return X, Y, english_word2idx, english_idx2word, english_vocab, spanish_word2idx, spanish_idx2word, spanish_vocab
+	return X, Y, spanish_word2idx, spanish_idx2word, spanish_vocab, english_word2idx, english_idx2word, english_vocab
 
 def save_dataset(file_path, obj):
 	with open(file_path, 'wb') as f:
@@ -70,9 +70,9 @@ def read_dataset(file_path):
 		return pickle.load(f, encoding='latin1')
 
 def main():
-	english_sentences = read_sentences('data/data.en')
 	spanish_sentences = read_sentences('data/data.es')
-	save_dataset('./data.pkl', create_dataset(english_sentences, spanish_sentences))
+	english_sentences = read_sentences('data/data.en')
+	save_dataset('./data.pkl', create_dataset(spanish_sentences, english_sentences))
 
 if __name__ == '__main__':
 	main()
