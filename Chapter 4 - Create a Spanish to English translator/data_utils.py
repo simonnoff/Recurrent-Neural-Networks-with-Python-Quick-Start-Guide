@@ -3,7 +3,7 @@
 # |------------------------------------------------|
 # |Dataset: OpenSubtitles                          |
 # |Url: http://opus.lingfil.uu.se/OpenSubtitles.php|
-# |Creator: Nemanja Tomic                          |
+# |Credits to: Nemanja Tomic (https://github.com/Nemzy/language-translation)
 # |------------------------------------------------|
 
 import pickle
@@ -18,35 +18,35 @@ def read_sentences(file_path):
 
 	return sentences
 
-def create_dataset(en_sentences, de_sentences):
+def create_dataset(english_sentences, spanish_sentences):
 
-	en_vocab_dict = Counter(word.strip(',." ;:)(][?!') for sentence in en_sentences for word in sentence.split())
-	de_vocab_dict = Counter(word.strip(',." ;:)(][?!') for sentence in de_sentences for word in sentence.split())
+	english_vocab_dict = Counter(word.strip(',." ;:)(][?!') for sentence in english_sentences for word in sentence.split())
+	spanish_vocab_dict = Counter(word.strip(',." ;:)(][?!') for sentence in spanish_sentences for word in sentence.split())
 
-	en_vocab = map(lambda x: x[0], sorted(en_vocab_dict.items(), key = lambda x: -x[1]))
-	de_vocab = map(lambda x: x[0], sorted(de_vocab_dict.items(), key = lambda x: -x[1]))
+	english_vocab = list(map(lambda x: x[0], sorted(english_vocab_dict.items(), key = lambda x: -x[1])))
+	spanish_vocab = list(map(lambda x: x[0], sorted(spanish_vocab_dict.items(), key = lambda x: -x[1])))
 
-	en_vocab = en_vocab[:20000]
-	de_vocab = de_vocab[:30000]
+	english_vocab = english_vocab[:20000]
+	spanish_vocab = spanish_vocab[:30000]
 
 	start_idx = 2
-	en_word2idx = dict([(word, idx+start_idx) for idx, word in enumerate(en_vocab)])
-	en_word2idx['<ukn>'] = 0
-	en_word2idx['<pad>'] = 1
+	english_word2idx = dict([(word, idx+start_idx) for idx, word in enumerate(english_vocab)])
+	english_word2idx['<ukn>'] = 0
+	english_word2idx['<pad>'] = 1
 
-	en_idx2word = dict([(idx, word) for word, idx in en_word2idx.iteritems()])
+	english_idx2word = dict([(idx, word) for word, idx in english_word2idx.items()])
 
 	start_idx = 4
-	de_word2idx = dict([(word, idx+start_idx) for idx, word in enumerate(de_vocab)])
-	de_word2idx['<ukn>'] = 0
-	de_word2idx['<go>']  = 1
-	de_word2idx['<eos>'] = 2
-	de_word2idx['<pad>'] = 3
+	spanish_word2idx = dict([(word, idx+start_idx) for idx, word in enumerate(spanish_vocab)])
+	spanish_word2idx['<ukn>'] = 0
+	spanish_word2idx['<go>']  = 1
+	spanish_word2idx['<eos>'] = 2
+	spanish_word2idx['<pad>'] = 3
 
-	de_idx2word = dict([(idx, word) for word, idx in de_word2idx.iteritems()])
+	spanish_idx2word = dict([(idx, word) for word, idx in spanish_word2idx.items()])
 
-	x = [[en_word2idx.get(word.strip(',." ;:)(][?!'), 0) for word in sentence.split()] for sentence in en_sentences]
-	y = [[de_word2idx.get(word.strip(',." ;:)(][?!'), 0) for word in sentence.split()] for sentence in de_sentences]
+	x = [[english_word2idx.get(word.strip(',." ;:)(][?!'), 0) for word in sentence.split()] for sentence in english_sentences]
+	y = [[spanish_word2idx.get(word.strip(',." ;:)(][?!'), 0) for word in sentence.split()] for sentence in spanish_sentences]
 
 	X = []
 	Y = []
@@ -59,9 +59,7 @@ def create_dataset(en_sentences, de_sentences):
 				X.append(x[i])
 				Y.append(y[i])
 
-	# X - (en) an array of arrays (sentences) where each array consists of indecies of the particular work in the current sentence.
-	# Y - (de) --||-- (same as above)
-	return X, Y, en_word2idx, en_idx2word, en_vocab, de_word2idx, de_idx2word, de_vocab
+	return X, Y, english_word2idx, english_idx2word, english_vocab, spanish_word2idx, spanish_idx2word, spanish_vocab
 
 def save_dataset(file_path, obj):
 	with open(file_path, 'wb') as f:
@@ -72,9 +70,9 @@ def read_dataset(file_path):
 		return pickle.load(f, encoding='latin1')
 
 def main():
-	en_sentences = read_sentences('data/data.en')
-	de_sentences = read_sentences('data/data.de')
-	save_dataset('./data.pkl', create_dataset(en_sentences, de_sentences))
+	english_sentences = read_sentences('data/data.en')
+	spanish_sentences = read_sentences('data/data.es')
+	save_dataset('./data.pkl', create_dataset(english_sentences, spanish_sentences))
 
 if __name__ == '__main__':
 	main()
