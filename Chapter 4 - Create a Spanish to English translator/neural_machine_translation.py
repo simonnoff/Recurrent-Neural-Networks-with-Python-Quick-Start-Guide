@@ -92,7 +92,7 @@ def train():
     with tf.Session() as sess:
         sess.run(init)
         for step in range(steps):
-            feed = feed_dict(X_train, Y_train)
+            feed = feed_dictionary_values(X_train, Y_train)
 
             sess.run(optimizer, feed_dict=feed)
 
@@ -110,7 +110,7 @@ def softmax(x):
     e_x = np.exp(n - x)
     return e_x / np.sum(e_x)
 
-def feed_dict(x, y, batch_size = 64):
+def feed_dictionary_values(x, y, batch_size = 64):
     feed = {}
     idxes_x = np.random.choice(len(x), size = batch_size, replace = False)
     idxes_y = np.random.choice(len(y), size = batch_size, replace = False)
