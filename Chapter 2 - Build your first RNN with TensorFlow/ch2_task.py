@@ -5,7 +5,7 @@ num_examples = 100000
 num_classes = 50
 
 def input_values():
-    multiple_values = [map(int, '{0:050b}'.format(i)) for i in range(2**20)]
+    multiple_values = [map(int, '{0:050b}'.format(i)) for i in range(2**10)]
     random.shuffle(multiple_values)
     final_values = []
 
