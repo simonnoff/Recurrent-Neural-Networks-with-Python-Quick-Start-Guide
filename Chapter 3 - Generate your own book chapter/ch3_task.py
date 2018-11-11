@@ -22,6 +22,7 @@ def build_dictionary(words):
 words = get_words("./the_hunger_games.txt")
 
 # Check if text is added to `the_hunger_games.txt` file
+
 if len(words) < 2000:
     print("> Please enter text with more than 2000 words inside `the_hunger_games.txt` file. Then run the program again.")
     sys.exit()
@@ -53,16 +54,16 @@ training_X, training_y = input_output_values()
 
 learning_rate = 0.001
 batch_size = 512
-num_iterations = 100000
-num_hidden_units = 1024
+number_of_iterations = 100000
+number_hidden_units = 1024
 
 X = tf.placeholder(tf.float32, shape=[batch_size, section_length, most_common_words_length])
 y = tf.placeholder(tf.float32, shape=[batch_size, most_common_words_length])
 
-weights = tf.Variable(tf.truncated_normal([num_hidden_units, most_common_words_length]))
+weights = tf.Variable(tf.truncated_normal([number_hidden_units, most_common_words_length]))
 biases = tf.Variable(tf.truncated_normal([most_common_words_length]))
 
-gru_cell = tf.contrib.rnn.GRUCell(num_units=num_hidden_units)
+gru_cell = tf.contrib.rnn.GRUCell(num_units=number_hidden_units)
 
 outputs, state = tf.nn.dynamic_rnn(gru_cell, inputs=X, dtype=tf.float32)
 outputs = tf.transpose(outputs, [1, 0, 2])
@@ -80,7 +81,7 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     iter_offset = 0
     saver = tf.train.Saver()
-    for iter in range(num_iterations):
+    for iter in range(number_of_iterations):
         length_X = len(training_X)
 
         if length_X != 0:
