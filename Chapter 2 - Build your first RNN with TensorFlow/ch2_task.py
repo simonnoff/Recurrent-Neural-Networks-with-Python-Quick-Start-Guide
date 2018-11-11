@@ -20,11 +20,11 @@ def input_values():
 def output_values(inputs):
     final_values = []
     for value in inputs:
-        output_values = [0 for _ in range(num_classes + 1)]
+        output_values = [0 for _ in range(num_classes)]
         count = 0
         for i in value:
             count += i[0]
-        if count < num_classes + 1:
+        if count < num_classes:
             output_values[count] = 1
         final_values.append(output_values)
     return final_values
@@ -35,13 +35,13 @@ def generate_data():
 
 X = tf.placeholder(tf.float32, shape=[None, num_classes, 1])
 
-Y = tf.placeholder(tf.float32, shape=[None, num_classes + 1])
+Y = tf.placeholder(tf.float32, shape=[None, num_classes])
 
 num_hidden_units = 24
 
-weights = tf.Variable(tf.truncated_normal([num_hidden_units, num_classes + 1]))
+weights = tf.Variable(tf.truncated_normal([num_hidden_units, num_classes]))
 
-biases = tf.Variable(tf.truncated_normal([num_classes + 1]))
+biases = tf.Variable(tf.truncated_normal([num_classes]))
 
 rnn_cell = tf.contrib.rnn.BasicRNNCell(num_units=num_hidden_units)
 
