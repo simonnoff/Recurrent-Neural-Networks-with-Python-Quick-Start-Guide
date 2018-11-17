@@ -73,10 +73,10 @@ with tf.Session() as sess:
 
     X_train, y_train = generate_data()
 
-    for i in range(epoch):
+    for epoch in range(epoch):
         iter = 0
 
-        for epoch in range(number_of_batches):
+        for _ in range(number_of_batches):
 
             training_x = X_train[iter:iter+batch_size]
 
@@ -86,7 +86,7 @@ with tf.Session() as sess:
 
             _, current_total_loss = sess.run([optimizer, total_loss], feed_dict={X: training_x, Y: training_y})
 
-            print("Iteration", iter, "loss", current_total_loss)
+            print("Epoch", epoch, "Iteration", iter, "loss", current_total_loss)
 
             print("__________________")
 
