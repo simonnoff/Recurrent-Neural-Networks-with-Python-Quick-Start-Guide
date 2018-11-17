@@ -65,7 +65,8 @@ batch_size = 1000
 
 number_of_batches = int(num_examples/batch_size)
 
-epoch = 1000
+# Increase epochs to 1000 for better performance
+epoch = 100
 
 with tf.Session() as sess:
 
