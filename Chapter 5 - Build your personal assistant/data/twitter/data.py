@@ -1,7 +1,7 @@
 EN_WHITELIST = '0123456789abcdefghijklmnopqrstuvwxyz ' # space is included in whitelist
 EN_BLACKLIST = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~\''
 
-FILENAME = 'data/chat.txt'
+FILENAME = 'tweets.txt'
 
 limit = {
         'maxq' : 20,
@@ -34,7 +34,12 @@ def ddefault():
 
 '''
 def read_lines(filename):
-    return open(filename).read().split('\n')[:-1]
+    num_lines = open(filename).read().split('\n')[:-1]
+    if len(num_lines) < 10:
+        print("> Please enter text with more than 10 lines inside `tweet.txt` file. Then run the program again.")
+    sys.exit()
+
+    return num_lines
 
 
 '''
